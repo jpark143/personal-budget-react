@@ -1,6 +1,45 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Pie } from "react-chartjs-2";
 
 function HomePage() {
+ 
+    const [ chartData, setChartData ] = useState({
+    datasets: [
+        {
+            data: [1,2,3,4,5,6,7],
+            backgroundColor: [
+                '#ffcd56',
+                '#ff6384',
+                '#36a2eb',
+                '#fd6b19',
+                'red',
+                'green',
+                'gray'
+            ],
+        }
+    ],
+    labels: []
+});
+        
+useEffect(() => {
+    axios.get('http://localhost:5000/pb/budget').then(function(res){
+    console.log(res);
+    //let data=[];
+    let myData = chartData;
+    //let labels=[];
+    for (var i = 0; i < res.data.myBudget.length; i++){
+        //data.push(res.data.myBudget[i].budget);
+        //labels.push(res.data.myBudget[i].budget);
+        myData.datasets[0].data[i]=res.data.myBudget[i].budget;
+        myData.labels[i]=res.data.myBudget[i].title;
+        }
+    
+    setChartData(myData);
+ });
+    
+} );
+
   return (
     <main className="center" id="main">
 
@@ -66,7 +105,7 @@ function HomePage() {
             <article>
                 <h1>Chart</h1>
                 <p>
-                    <canvas id="myChart" width="400" height="400"></canvas>
+                    <Pie data={chartData} width={400} height={400}/>
                 </p>
             </article>
 
